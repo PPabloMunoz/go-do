@@ -6,7 +6,7 @@ A sleek command-line todo manager built with Go and
 [Bubble Tea](https://github.com/charmbracelet/bubbletea).
 Stay organized without leaving your terminal.
 
-![go-do in action](https://via.placeholder.com/800x400?text=go-do+TUI+Screenshot)
+![go-do in action](./screenshot.png)
 
 ---
 
