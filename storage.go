@@ -35,15 +35,21 @@ func loadData() []todo {
 func saveData(todos []todo) error {
 	file, err := os.Create(FILENAME)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create file: %w", err)
 	}
 	defer file.Close()
 
 	encoder := json.NewEncoder(file)
-	err = encoder.Encode(todos)
-	if err != nil {
-		return err
+	if err := encoder.Encode(todos); err != nil {
+		return fmt.Errorf("failed to encode todos: %w", err)
 	}
 
+	count := len(todos)
+	countStr := fmt.Sprintf("%d", count)
+	if count == 1 {
+		fmt.Printf("  %s  Saved %s todo to %s\n", checkmarkStyle.Render("✓"), greenStyle.Render(countStr), FILENAME)
+	} else {
+		fmt.Printf("  %s  Saved %s todos to %s\n", checkmarkStyle.Render("✓"), greenStyle.Render(countStr), FILENAME)
+	}
 	return nil
 }

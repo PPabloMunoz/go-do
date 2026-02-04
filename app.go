@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -43,9 +42,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg: // Key pressed?
 		switch msg.String() {
 		case "ctrl+c", "q":
-			fmt.Println("Saving data into data.json")
 			if err := saveData(m.todos); err != nil {
-				fmt.Printf("Error ocurred while saving the data: %v", err)
+				fmt.Println(errorStyle.Render("Error: " + err.Error()))
 			}
 			return m, tea.Quit
 		case "up", "k":
@@ -111,24 +109,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := "What have you done?\n\n" // Header
+	s := headerStyle.Render("What have you done?") + "\n"
 
 	for i := range m.todos {
 		todo := &m.todos[i]
 		cursor := " "
-		if m.cursor == i && !m.isAdding {
-			cursor = ">"
-		}
-		completed := " "
 		final := "\n"
-		if todo.Done != nil {
-			completed = "x"
-			final = " - " + doneDateStyle.Render(todo.Done.Format(time.RFC3339Nano)) + "\n"
+		if m.cursor == i && !m.isAdding {
+			cursor = cursorStyle.Render(">")
 		}
-		s += fmt.Sprintf("%s [%s] %s%s", cursor, completed, todo.Name, final)
+		if todo.Done != nil {
+			final = "  " + checkboxDoneStyle.Render("[x]") + " " + doneTextStyle.Render(todo.Name) + " " + doneDateStyle.Render("• "+todo.Done.Format("Jan 02 15:04")) + "\n"
+		} else {
+			final = "  " + checkboxPendingStyle.Render("[ ]") + " " + pendingTextStyle.Render(todo.Name) + "\n"
+		}
+		s += cursor + final
 	}
 	if m.isAdding {
-		s += m.textInput.View()
+		s += inputStyle.Render("> ") + m.textInput.View()
 	}
-	return s + helpStyle.Render("\n\n   space: toggle • a: add • enter: submit • d: delete • u: undo deletion • esc: cancel • q: exit\n")
+
+	helpText := "\n " + keyStyle.Render("space") + ": toggle • " + keyStyle.Render("a") + ": add • " + keyStyle.Render("enter") + ": submit • " + keyStyle.Render("d") + keyStyle.Render("esc") + ": delete • " + keyStyle.Render("u") + ": undo • " + ": cancel • " + keyStyle.Render("q") + ": exit"
+	return containerStyle.Render(s + helpStyle.Render(helpText))
 }
