@@ -6,8 +6,7 @@ var (
 	headerStyle = lipgloss.NewStyle().
 			Bold(true).
 			Foreground(lipgloss.Color("#cba6f7")).
-			MarginBottom(1).
-			SetString("What have you done?")
+			MarginBottom(1)
 
 	cursorStyle = lipgloss.NewStyle().
 			Bold(true).
